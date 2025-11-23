@@ -1,0 +1,6 @@
+platform,product_name,product_asin,reviewer_name,rating,review_title,review_text,date,verified_purchase
+Amazon,OnePlus Buds 3,B0DFQ1R3W4,John Doe,5,Excellent sound quality!,"Amazing earbuds with great ANC. Battery life is outstanding and the case is compact. Highly recommended for the price.",2025-11-15,Yes
+Amazon,OnePlus Buds 3,B0DFQ1R3W4,Jane Smith,4,Good but not perfect,"Sound quality is good but the fit could be better for smaller ears. Overall a decent purchase.",2025-11-10,Yes
+Flipkart,OnePlus Buds 3,FLIP123,Ramesh Kumar,5,Best in this price range,"Incredible value for money. The ANC works really well and call quality is excellent.",2025-11-12,Yes
+Flipkart,OnePlus Buds 3,FLIP123,Priya Singh,3,Average product,"It's okay for the price. Nothing special but gets the job done.",2025-11-08,No
+Amazon,OnePlus Buds 3,B0DFQ1R3W4,Mike Johnson,2,Disappointed with battery,"Battery drains faster than advertised. Expected better from OnePlus.",2025-11-05,Yes

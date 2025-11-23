@@ -1,0 +1,36 @@
+# Windows-optimized requirements with pre-built wheels
+# Install these in order for best compatibility
+
+# Step 1: Core numerical libraries (must install first)
+numpy
+pandas
+
+# Step 2: Core dependencies
+streamlit
+groq
+beautifulsoup4
+selenium
+requests
+plotly
+
+# Step 3: Database
+sqlalchemy
+
+# Step 4: Utilities
+python-dotenv
+fake-useragent
+retry
+tqdm
+webdriver-manager
+
+# Step 5: Data processing
+nltk
+textblob
+wordcloud
+pillow
+matplotlib
+
+# Step 6: Development (optional)
+# pytest
+# black
+# flake8
