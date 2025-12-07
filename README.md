@@ -374,7 +374,7 @@ This project demonstrates:
 
 ## 🤝 Team & Acknowledgments
 
-**Infosys Internship Program 2024**
+**Infosys Springboard Virtual Internship-6.0 **
 
 **Mentor**: Bhargavesh Dakka
 
@@ -468,7 +468,7 @@ Please respect:
 
 **Built with ❤️ for Infosys Internship Project**
 
-**Final Presentation**: December 2024
+**Final Presentation**: December 2025
 
 ---
 
