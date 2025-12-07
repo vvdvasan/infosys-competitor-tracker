@@ -2,7 +2,7 @@
 
 **A complete AI-powered system for e-commerce competitor analysis, sentiment tracking, and price forecasting.**
 
-Built as part of **Infosys Springboard Virtual Internship-6.0** by Team under the mentorship of **Bhargavesh Dakka**.
+Built as part of **Infosys Springboard Internship 6.0** by Team under the mentorship of **Bhargavesh Dakka**.
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)](https://streamlit.io/)
@@ -374,7 +374,7 @@ This project demonstrates:
 
 ## 🤝 Team & Acknowledgments
 
-**Infosys Springboard Virtual Internship-6.0**
+**Infosys Springboard Internship 6.0**
 
 **Mentor**: Bhargavesh Dakka
 
