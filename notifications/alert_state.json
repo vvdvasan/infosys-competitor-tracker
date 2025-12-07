@@ -1,0 +1,12 @@
+{
+    "last_prices": {
+        "iphone14_128gb_amazon": null,
+        "iphone14_128gb_flipkart": null
+    },
+    "last_sentiments": {
+        "iphone14_amazon": 64.0,
+        "iphone14_flipkart": 78.68852459016394
+    },
+    "last_check": "2025-11-29T18:50:34.213107",
+    "alerts_sent": []
+}

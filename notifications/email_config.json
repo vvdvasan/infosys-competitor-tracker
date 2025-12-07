@@ -1,0 +1,13 @@
+{
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_email": "danavasanv12@gmail.com",
+    "sender_password": "ubis uakj itxq hkuu",
+    "recipient_emails": [
+        "danavasanv12@gmail.com",
+        "cryspicruize12@gmail.com",
+        "springboardmentor537@gmail.com",
+        "vvdvasan@gmail.com"
+    ],
+    "enabled": true
+}

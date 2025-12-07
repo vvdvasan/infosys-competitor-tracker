@@ -1,4 +1,4 @@
-"""Streamlit dashboard for sentiment analysis visualization."""
+"""Enhanced Streamlit dashboard with time series forecasting."""
 
 import streamlit as st
 import pandas as pd
@@ -19,7 +19,6 @@ from sentiment_analysis.config import Config
 from sentiment_analysis.database.db_manager import DatabaseManager
 from sentiment_analysis.api.groq_client import GroqSentimentAnalyzer
 from sentiment_analysis.scraper.amazon_scraper import AmazonScraper
-from price_tracker.price_history_manager import PriceHistoryManager
 
 # Import forecasting modules
 from forecasting.chronos_forecaster import ChronosForecaster
@@ -28,7 +27,7 @@ from forecasting.utils import load_timeseries_data, generate_sample_data
 
 # Page configuration
 st.set_page_config(
-    page_title="E-commerce Competitor Sentiment Tracker",
+    page_title="E-commerce Competitor Sentiment & Forecast Tracker",
     page_icon="📊",
     layout="wide"
 )
@@ -39,14 +38,20 @@ def init_components():
     """Initialize database and API clients."""
     db_manager = DatabaseManager()
     groq_analyzer = GroqSentimentAnalyzer()
-    price_manager = PriceHistoryManager()
-    return db_manager, groq_analyzer, price_manager
+    return db_manager, groq_analyzer
 
-db_manager, groq_analyzer, price_manager = init_components()
+@st.cache_resource
+def init_forecasting_models():
+    """Initialize forecasting models (cached for performance)."""
+    chronos = ChronosForecaster(model_size="tiny")
+    prophet = ProphetForecaster()
+    return chronos, prophet
+
+db_manager, groq_analyzer = init_components()
 
 # Title and description
-st.title("🛍️ Real-Time Competitor Strategy Tracker")
-st.markdown("### E-commerce Sentiment Analysis Dashboard")
+st.title("🛍️ E-Commerce Intelligence Dashboard")
+st.markdown("### Real-Time Sentiment Analysis & AI-Powered Forecasting")
 st.markdown("---")
 
 # Sidebar
@@ -125,14 +130,13 @@ with st.sidebar:
     st.metric("Requests Used", f"{usage['requests_used']}/{Config.GROQ_RPM}")
     st.metric("Tokens Used", f"{usage['tokens_used']}/{Config.GROQ_TPM}")
 
-# Main content area
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+# Main content area - 5 tabs now!
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "📈 Overview",
     "🎯 Sentiment Analysis",
     "📦 Products",
     "📝 Reviews",
-    "🔀 Cross-Platform Comparison",
-    "🔮 AI Forecasting"
+    "🔮 AI Forecasting"  # NEW TAB!
 ])
 
 with tab1:
@@ -411,260 +415,10 @@ with tab4:
             ax.axis('off')
             st.pyplot(fig)
 
-# ========================================
-# TAB 5: CROSS-PLATFORM COMPARISON
-# ========================================
+# ============================================================================
+# 🔮 NEW FORECASTING TAB!
+# ============================================================================
 with tab5:
-    st.header("🔀 Cross-Platform Comparison: Amazon vs Flipkart")
-    st.markdown("Compare sentiment and prices across platforms for the same product")
-
-    # Product selection
-    product_id = st.selectbox(
-        "Select Product to Compare",
-        ["iphone14_128gb"],
-        help="Choose a product to compare across platforms"
-    )
-
-    col1, col2 = st.columns(2)
-
-    # ========================================
-    # SENTIMENT COMPARISON (PRIMARY FEATURE)
-    # ========================================
-    st.markdown("---")
-    st.subheader("🎯 Sentiment Comparison")
-    st.markdown("*Primary Analysis: How do customers feel about this product on each platform?*")
-
-    # Get sentiment data from database for both platforms
-    with sqlite3.connect(db_manager.db_path) as conn:
-        query = """
-            SELECT
-                p.product_name,
-                CASE
-                    WHEN p.product_link LIKE '%amazon%' THEN 'Amazon'
-                    WHEN p.product_link LIKE '%flipkart%' THEN 'Flipkart'
-                    ELSE 'Other'
-                END as platform,
-                sa.sentiment,
-                COUNT(*) as count,
-                AVG(sa.confidence) as avg_confidence,
-                AVG(r.rating) as avg_rating
-            FROM sentiment_analysis sa
-            JOIN reviews r ON sa.review_id = r.review_id
-            JOIN products p ON r.product_asin = p.product_asin
-            WHERE sa.sentiment IN ('POSITIVE', 'NEGATIVE', 'NEUTRAL')
-                AND p.product_name LIKE '%iPhone 14%'
-            GROUP BY platform, sa.sentiment
-        """
-        df_platform_sentiment = pd.read_sql_query(query, conn)
-
-    if not df_platform_sentiment.empty:
-        # Create side-by-side sentiment comparison
-        col1, col2 = st.columns(2)
-
-        for platform in ['Amazon', 'Flipkart']:
-            platform_data = df_platform_sentiment[df_platform_sentiment['platform'] == platform]
-
-            with col1 if platform == 'Amazon' else col2:
-                st.markdown(f"### {platform}")
-
-                if not platform_data.empty:
-                    # Sentiment distribution pie chart
-                    fig_pie = px.pie(
-                        platform_data,
-                        values='count',
-                        names='sentiment',
-                        title=f"{platform} Sentiment Distribution",
-                        color='sentiment',
-                        color_discrete_map={
-                            'POSITIVE': '#00CC88',
-                            'NEGATIVE': '#FF4444',
-                            'NEUTRAL': '#FFAA00'
-                        }
-                    )
-                    st.plotly_chart(fig_pie, use_container_width=True)
-
-                    # Stats
-                    total_reviews = platform_data['count'].sum()
-                    positive_pct = (platform_data[platform_data['sentiment'] == 'POSITIVE']['count'].sum() / total_reviews) * 100 if total_reviews > 0 else 0
-                    avg_rating = platform_data['avg_rating'].mean()
-
-                    st.metric("Total Reviews Analyzed", int(total_reviews))
-                    st.metric("Positive Sentiment", f"{positive_pct:.1f}%")
-                    st.metric("Average Rating", f"{avg_rating:.1f}/5.0")
-                else:
-                    st.info(f"No {platform} sentiment data available yet")
-
-        # Comparative insights
-        if len(df_platform_sentiment['platform'].unique()) >= 2:
-            st.markdown("---")
-            st.subheader("📊 Platform Comparison Insights")
-
-            amazon_positive = df_platform_sentiment[(df_platform_sentiment['platform'] == 'Amazon') & (df_platform_sentiment['sentiment'] == 'POSITIVE')]['count'].sum()
-            flipkart_positive = df_platform_sentiment[(df_platform_sentiment['platform'] == 'Flipkart') & (df_platform_sentiment['sentiment'] == 'POSITIVE')]['count'].sum()
-
-            amazon_total = df_platform_sentiment[df_platform_sentiment['platform'] == 'Amazon']['count'].sum()
-            flipkart_total = df_platform_sentiment[df_platform_sentiment['platform'] == 'Flipkart']['count'].sum()
-
-            amazon_positive_pct = (amazon_positive / amazon_total * 100) if amazon_total > 0 else 0
-            flipkart_positive_pct = (flipkart_positive / flipkart_total * 100) if flipkart_total > 0 else 0
-
-            col1, col2, col3 = st.columns(3)
-            with col1:
-                if amazon_positive_pct > flipkart_positive_pct:
-                    st.success(f"✅ Amazon has {amazon_positive_pct - flipkart_positive_pct:.1f}% MORE positive sentiment")
-                else:
-                    st.success(f"✅ Flipkart has {flipkart_positive_pct - amazon_positive_pct:.1f}% MORE positive sentiment")
-
-            with col2:
-                winner = "Amazon" if amazon_positive_pct > flipkart_positive_pct else "Flipkart"
-                st.info(f"🏆 **Better Reviews:** {winner}")
-
-            with col3:
-                total_analyzed = amazon_total + flipkart_total
-                st.metric("Total Analyzed", int(total_analyzed))
-
-    else:
-        st.warning("No cross-platform sentiment data available. Please scrape and analyze reviews from both Amazon and Flipkart.")
-
-    # ========================================
-    # PRICE COMPARISON (SECONDARY FEATURE)
-    # ========================================
-    st.markdown("---")
-    st.subheader("💰 Price Tracking & Comparison")
-    st.markdown("*Secondary Analysis: Which platform offers better pricing?*")
-
-    # Get price history data
-    try:
-        comparison = price_manager.compare_platforms(product_id)
-
-        if comparison["platforms"]:
-            col1, col2, col3 = st.columns(3)
-
-            # Amazon stats
-            amazon_data = comparison["platforms"].get("amazon", {})
-            flipkart_data = comparison["platforms"].get("flipkart", {})
-
-            with col1:
-                st.markdown("### Amazon")
-                if amazon_data.get("current_price"):
-                    st.metric("Current Price", f"Rs.{amazon_data['current_price']:,.0f}")
-                    st.metric("Deal Score", f"{amazon_data['deal_score']:.0f}/100")
-                    st.caption(f"Lowest: Rs.{amazon_data.get('lowest_price', 0):,.0f}")
-                    st.caption(f"Highest: Rs.{amazon_data.get('highest_price', 0):,.0f}")
-                else:
-                    st.info("No price data")
-
-            with col2:
-                st.markdown("### Flipkart")
-                if flipkart_data.get("current_price"):
-                    st.metric("Current Price", f"Rs.{flipkart_data['current_price']:,.0f}")
-                    st.metric("Deal Score", f"{flipkart_data['deal_score']:.0f}/100")
-                    st.caption(f"Lowest: Rs.{flipkart_data.get('lowest_price', 0):,.0f}")
-                    st.caption(f"Highest: Rs.{flipkart_data.get('highest_price', 0):,.0f}")
-                else:
-                    st.info("No price data")
-
-            with col3:
-                st.markdown("### Best Deal")
-                best = comparison.get("best_deal", "").upper()
-                diff = comparison.get("price_difference", 0)
-                if best:
-                    st.success(f"🏆 **{best}**")
-                    st.metric("Save", f"Rs.{diff:,.0f}")
-
-            # Price history graph
-            st.markdown("---")
-            st.subheader("📈 Price History (Last 90 Days)")
-
-            fig = go.Figure()
-            for platform in ["amazon", "flipkart"]:
-                history_df = price_manager.get_price_history_dataframe(product_id, platform, days=90)
-                if not history_df.empty:
-                    color = "#FF9900" if platform == "amazon" else "#047BD5"
-                    fig.add_trace(go.Scatter(
-                        x=history_df['timestamp'],
-                        y=history_df['price'],
-                        mode='lines+markers',
-                        name=platform.capitalize(),
-                        line=dict(color=color, width=3),
-                        marker=dict(size=6)
-                    ))
-
-            fig.update_layout(
-                title="Price Trends Comparison",
-                xaxis_title="Date",
-                yaxis_title="Price (Rs.)",
-                hovermode='x unified',
-                template="plotly_white",
-                height=400
-            )
-            st.plotly_chart(fig, use_container_width=True)
-
-            # Buy recommendations
-            st.markdown("---")
-            st.subheader("🎯 Should You Buy Now?")
-
-            col1, col2 = st.columns(2)
-
-            for idx, platform in enumerate(["amazon", "flipkart"]):
-                rec = price_manager.get_buy_recommendation(product_id, platform, days=90)
-
-                with col1 if idx == 0 else col2:
-                    st.markdown(f"### {platform.capitalize()}")
-
-                    action = rec.get("action", "insufficient_data").replace("_", " ").upper()
-                    confidence = rec.get("confidence", 0)
-                    reason = rec.get("reason", "Not enough data")
-
-                    # Recommendation badge
-                    if "BUY" in action:
-                        st.success(f"✅ **{action}**")
-                    elif "WAIT" in action:
-                        st.error(f"⏳ **{action}**")
-                    else:
-                        st.info(f"💭 **{action}**")
-
-                    st.markdown(f"**Confidence:** {confidence}%")
-                    st.caption(f"*{reason}*")
-
-                    # Deal score gauge
-                    deal_score = rec.get("deal_score", 0)
-                    st.progress(deal_score / 100)
-                    st.caption(f"Deal Score: {deal_score:.1f}/100")
-
-        else:
-            st.info("No price history data available. Run `python populate_price_data.py` to generate sample data for testing.")
-
-    except Exception as e:
-        st.warning(f"Price comparison unavailable: {str(e)}")
-        st.info("Run `python populate_price_data.py` to set up price tracking.")
-
-    # ========================================
-    # COMBINED RECOMMENDATION
-    # ========================================
-    st.markdown("---")
-    st.subheader("🎓 Final Recommendation")
-    st.markdown("*Combining both sentiment and price analysis*")
-
-    recommendation_text = """
-    **Based on comprehensive analysis:**
-
-    1. **Sentiment Analysis** shows customer satisfaction levels on each platform
-    2. **Price Tracking** identifies the best deal and optimal buying time
-    3. **Combined Insight** helps you make an informed decision
-
-    **Recommendation Strategy:**
-    - If sentiment is HIGH and price is GOOD → **BUY NOW** ✅
-    - If sentiment is HIGH but price is HIGH → **WAIT for better price** ⏳
-    - If sentiment is LOW regardless of price → **Consider alternatives** ⚠️
-    """
-
-    st.info(recommendation_text)
-
-# ============================================================================
-# 🔮 TAB 6: AI-POWERED FORECASTING (Chronos + Prophet)
-# ============================================================================
-with tab6:
     st.header("🔮 AI-Powered Time Series Forecasting")
     st.markdown("**Predict iPhone 14 ratings and prices using cutting-edge AI models**")
     st.markdown("---")
@@ -722,7 +476,7 @@ with tab6:
                     st.stop()
 
             # Display data info
-            st.success(f"[OK] Loaded {len(df)} days of data ({df['date'].min().date()} to {df['date'].max().date()})")
+            st.success(f"✓ Loaded {len(df)} days of data ({df['date'].min().date()} to {df['date'].max().date()})")
 
             # Show data preview
             with st.expander("📊 View Data Preview"):
@@ -731,7 +485,7 @@ with tab6:
                 with col1:
                     st.metric("Average Rating", f"{df['rating'].mean():.2f}")
                 with col2:
-                    st.metric("Average Price", f"Rs.{df['current_price'].mean():,.0f}")
+                    st.metric("Average Price", f"₹{df['current_price'].mean():,.0f}")
                 with col3:
                     st.metric("Data Points", len(df))
 
@@ -877,7 +631,7 @@ with tab6:
                 fig_price.update_layout(
                     title=f"iPhone 14 Price Forecast - Next {forecast_horizon} Days",
                     xaxis_title="Date",
-                    yaxis_title="Price (Rs.)",
+                    yaxis_title="Price (₹)",
                     hovermode='x unified',
                     height=500
                 )
@@ -1204,7 +958,7 @@ with tab6:
 
         with col2:
             st.markdown("""
-            **🟢 Prophet (Meta/Facebook)**
+            **🟢 Prophet (Facebook/Meta)**
             - Interpretable additive model
             - Decomposes trend + seasonality
             - Handles holidays and events
