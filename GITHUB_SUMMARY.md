@@ -45,8 +45,7 @@ Think of it as a **time machine** for your project - you can go back to any prev
 
 #### 🎨 Dashboard Applications:
 - `dashboard/app.py` - Main sentiment dashboard
-- `dashboard/app_with_forecasting.py` - Complete 6-tab dashboard
-- `dashboard/app_price_comparison.py` - Cross-platform comparison
+- `dashboard/app_with_forecasting.py` - Complete 5-tab dashboard
 - `dashboard/app_forecasting_simple.py` - Simple forecasting demo
 
 #### 🔔 Notification System:
@@ -129,8 +128,7 @@ infosys-competitor-tracker/
 ├── 🎨 Dashboard Applications
 │   ├── dashboard/
 │   │   ├── app.py                                            # Main sentiment dashboard
-│   │   ├── app_with_forecasting.py                           # 6-tab complete dashboard
-│   │   ├── app_price_comparison.py                           # Cross-platform comparison
+│   │   ├── app_with_forecasting.py                           # 5-tab complete dashboard
 │   │   └── app_forecasting_simple.py                         # Simple forecasting demo
 │
 ├── 🔔 Notification System
@@ -212,9 +210,9 @@ infosys-competitor-tracker/
 - ✅ Production-ready code with error handling
 
 ### 3. **Interactive Dashboard**
-- ✅ 6-tab Streamlit dashboard
+- ✅ 5-tab Streamlit dashboard
 - ✅ Live model evaluation metrics
-- ✅ Cross-platform comparison (Amazon vs Flipkart)
+- ✅ Real-time sentiment analysis and forecasting
 
 ### 4. **Professional Documentation**
 - ✅ Comprehensive README

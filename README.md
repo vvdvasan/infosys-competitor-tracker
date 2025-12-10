@@ -36,25 +36,18 @@ This system solves three critical e-commerce challenges:
 - **Aspect-Level**: Identifies specific product features (camera, battery, etc.)
 - **86+ Reviews Analyzed**: Real iPhone 14 customer feedback
 
-### 🔄 Cross-Platform Comparison
-- **Amazon vs Flipkart**: Side-by-side price and sentiment comparison
-- **Deal Score Algorithm**: Intelligent scoring (0-100) for best deals
-- **Savings Calculator**: Automatically identifies price differences
-- **Platform Insights**: Which platform has better reviews and pricing
-
 ### 🔔 Smart Email Notifications
 - **Price Drop Alerts**: Get notified when prices fall (e.g., Rs.56,000 → Rs.52,000)
 - **Sentiment Warnings**: Alert when customer sentiment declines (78% → 65%)
 - **Professional HTML Emails**: Beautiful templates with "View in Dashboard" buttons
 - **SMTP Integration**: Automated email delivery
 
-### 📊 Interactive Dashboard (6 Tabs)
+### 📊 Interactive Dashboard (5 Tabs)
 1. **Overview**: Real-time statistics and sentiment distribution
 2. **Sentiment Analysis**: WordCloud, trends, rating breakdown
 3. **Products**: Price tracking and comparison
 4. **Reviews**: Filtered review listing with AI sentiment labels
-5. **Cross-Platform**: Amazon vs Flipkart comparison
-6. **AI Forecasting**: Live forecasts with evaluation metrics
+5. **AI Forecasting**: Live forecasts with evaluation metrics
 
 ### 📈 Statistical Analysis
 - **EDA Notebooks**: Complete exploratory data analysis
@@ -91,8 +84,7 @@ infosys-competitor-tracker/
 ├── 🎨 Dashboard
 │   ├── dashboard/
 │   │   ├── app.py                              # Main sentiment dashboard
-│   │   ├── app_with_forecasting.py             # Complete dashboard (6 tabs)
-│   │   └── app_price_comparison.py             # Cross-platform comparison
+│   │   └── app_with_forecasting.py             # Complete dashboard (5 tabs)
 │
 ├── 🔔 Notifications
 │   ├── notifications/
@@ -199,16 +191,6 @@ Open browser to `http://localhost:8501`
 3. Watch real-time AI processing
 4. View sentiment breakdown and trends
 5. Filter reviews by sentiment (Positive/Negative/Neutral)
-
-### 🔄 Compare Platforms
-
-1. Navigate to **"📊 Cross-Platform Comparison"** tab
-2. Select product (e.g., iPhone 14 128GB)
-3. View:
-   - Sentiment comparison (Amazon vs Flipkart)
-   - Price comparison with savings
-   - Deal Score (0-100 scale)
-   - Best deal recommendation
 
 ### 🔔 Setup Email Alerts
 
@@ -457,8 +439,6 @@ Please respect:
 ✅ **Production-Ready Dashboard** - 6 interactive tabs
 
 ✅ **Email Notification System** - Automated alerts
-
-✅ **Cross-Platform Intelligence** - Amazon vs Flipkart
 
 ✅ **Statistical Rigor** - EDA, stationarity tests, model evaluation
 
