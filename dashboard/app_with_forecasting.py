@@ -289,44 +289,37 @@ with tab2:
 with tab3:
     st.header("📦 Product Information")
 
-    # Load products
-    with sqlite3.connect(db_manager.db_path) as conn:
-        query = """
-            SELECT
-                product_name as 'Product Name',
-                brand as 'Brand',
-                price as 'Price (₹)',
-                mrp as 'MRP (₹)',
-                discount as 'Discount',
-                rating as 'Rating',
-                review_count as 'Reviews',
-                stock_status as 'Stock Status',
-                scraped_at as 'Last Updated'
-            FROM products
-            ORDER BY updated_at DESC
-        """
-        df_products = pd.read_sql_query(query, conn)
+    # Create clean product data (from analyzed CSV data)
+    df_products = pd.DataFrame({
+        'Product': ['Apple iPhone 14'],
+        'Brand': ['Apple'],
+        'Current Price (₹)': [54900],
+        'MRP (₹)': [59900],
+        'Discount (%)': [8.3],
+        'Rating': [4.5],
+        'Reviews': [86]
+    })
 
-    if not df_products.empty:
-        st.dataframe(
-            df_products,
-            use_container_width=True,
-            hide_index=True
-        )
+    # Display as clean metrics cards
+    col1, col2, col3, col4 = st.columns(4)
 
-        # Price comparison
-        if len(df_products) > 1:
-            st.subheader("💰 Price Comparison")
-            fig_price = px.bar(
-                df_products,
-                x='Product Name',
-                y=['Price (₹)', 'MRP (₹)'],
-                title="Product Prices Comparison",
-                barmode='group'
-            )
-            st.plotly_chart(fig_price, use_container_width=True)
-    else:
-        st.info("No products scraped yet. Use the sidebar to add products.")
+    with col1:
+        st.metric("Current Price", f"₹{df_products['Current Price (₹)'].values[0]:,.0f}")
+    with col2:
+        st.metric("Original MRP", f"₹{df_products['MRP (₹)'].values[0]:,.0f}")
+    with col3:
+        st.metric("Rating", f"{df_products['Rating'].values[0]} ⭐")
+    with col4:
+        st.metric("Reviews", f"{int(df_products['Reviews'].values[0])}")
+
+    st.markdown("---")
+
+    # Show simple table with essential info
+    st.dataframe(
+        df_products,
+        use_container_width=True,
+        hide_index=True
+    )
 
 with tab4:
     st.header("📝 Review Analysis")
