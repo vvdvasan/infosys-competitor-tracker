@@ -1,8 +1,16 @@
 # 🛍️ E-Commerce Competitor Strategy Tracker with AI-Powered Forecasting
 
+<div align="center">
+
+### 🎯 **Predict Prices with 99.62% Accuracy | AI-Powered Sentiment Analysis | Real-Time Intelligence**
+
 **A complete AI-powered system for e-commerce competitor analysis, sentiment tracking, and price forecasting.**
 
-Built as part of **Infosys Springboard Internship 6.0** by Team under the mentorship of **Bhargavesh Dakka**.
+Built as part of **Infosys Springboard Internship 6.0** under the mentorship of **Bhargavesh Dakka**.
+
+**⭐ Achievement: 0.38% MAPE on Price Forecasting ⭐**
+
+</div>
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red)](https://streamlit.io/)
@@ -14,7 +22,7 @@ Built as part of **Infosys Springboard Internship 6.0** by Team under the mentor
 
 This system solves three critical e-commerce challenges:
 
-1. **Price Inconsistency**: Track and predict prices across Amazon & Flipkart with 99.6% accuracy
+1. **Price Inconsistency**: Track and predict Flipkart prices with 99.6% accuracy using AI
 2. **Sentiment Uncertainty**: Extract true customer sentiment from reviews using Llama 3.3 70B
 3. **No Forecasting Intelligence**: Predict future prices and identify best deals automatically
 

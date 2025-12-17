@@ -77,3 +77,33 @@ chromedriver
 # Temporary files
 *.tmp
 temp/
+nul
+
+# Debug and test scripts (temporary - keep only production code)
+debug_*.py
+check_*.py
+analyze_*.py
+fix_*.py
+final_*.py
+populate_*.py
+import_amazon_reviews.py
+setup_notifications.py
+send_demo_alerts.py
+
+# Manual data collection files (temporary)
+amazon_reviews_manual.csv
+amazon_reviews_ready.csv
+amazon_reviews_template.csv
+
+# Internal documentation (not for public repo)
+COPY_PASTE_SUMMARY.txt
+FILES_FOR_MENTOR.md
+MANUAL_REVIEW_COLLECTION_GUIDE.md
+SCREENSHOT_GUIDE.md
+
+# Price history and tracker directories (generated data)
+price_history/
+price_tracker/
+
+# Claude settings
+.claude/settings.local.json
