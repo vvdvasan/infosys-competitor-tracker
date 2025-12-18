@@ -244,8 +244,8 @@ with tab2:
         )
         st.plotly_chart(fig_timeline, use_container_width=True)
 
-    # Product-wise sentiment
-    st.subheader("📦 Product-wise Sentiment")
+    # Product-wise sentiment (iPhone 14 only)
+    st.subheader("📦 iPhone 14 Sentiment Breakdown")
 
     with sqlite3.connect(db_manager.db_path) as conn:
         query = """
@@ -259,32 +259,62 @@ with tab2:
             JOIN reviews r ON sa.review_id = r.review_id
             JOIN products p ON r.product_asin = p.product_asin
             WHERE sa.sentiment IN ('POSITIVE', 'NEGATIVE', 'NEUTRAL')
+                AND p.product_name LIKE '%iPhone 14%'
             GROUP BY p.product_asin, sa.sentiment
             ORDER BY p.product_name
         """
         df_product_sentiment = pd.read_sql_query(query, conn)
 
     if not df_product_sentiment.empty:
-        # Pivot for better visualization
-        df_pivot = df_product_sentiment.pivot_table(
-            index='product_name',
-            columns='sentiment',
-            values='count',
-            fill_value=0
-        )
+        # Calculate sentiment percentages for better insights
+        total_reviews = df_product_sentiment['count'].sum()
+        sentiment_summary = df_product_sentiment.groupby('sentiment')['count'].sum()
 
-        fig_stacked = px.bar(
-            df_pivot.reset_index(),
-            x='product_name',
-            y=['POSITIVE', 'NEGATIVE', 'NEUTRAL'] if all(col in df_pivot.columns for col in ['POSITIVE', 'NEGATIVE', 'NEUTRAL']) else df_pivot.columns.tolist(),
-            title="Sentiment Distribution by Product",
+        # Display sentiment metrics
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            positive_count = sentiment_summary.get('POSITIVE', 0)
+            st.metric(
+                "Positive Reviews",
+                f"{int(positive_count)}",
+                f"{positive_count/total_reviews*100:.1f}%" if total_reviews > 0 else "0%"
+            )
+
+        with col2:
+            neutral_count = sentiment_summary.get('NEUTRAL', 0)
+            st.metric(
+                "Neutral Reviews",
+                f"{int(neutral_count)}",
+                f"{neutral_count/total_reviews*100:.1f}%" if total_reviews > 0 else "0%"
+            )
+
+        with col3:
+            negative_count = sentiment_summary.get('NEGATIVE', 0)
+            st.metric(
+                "Negative Reviews",
+                f"{int(negative_count)}",
+                f"{negative_count/total_reviews*100:.1f}%" if total_reviews > 0 else "0%",
+                delta_color="inverse"
+            )
+
+        st.markdown("---")
+
+        # Show pie chart for better visualization
+        fig_pie = px.pie(
+            values=sentiment_summary.values,
+            names=sentiment_summary.index,
+            title="iPhone 14 Sentiment Distribution",
+            color=sentiment_summary.index,
             color_discrete_map={
                 'POSITIVE': '#00CC88',
                 'NEGATIVE': '#FF4444',
                 'NEUTRAL': '#FFAA00'
             }
         )
-        st.plotly_chart(fig_stacked, use_container_width=True)
+        st.plotly_chart(fig_pie, use_container_width=True)
+    else:
+        st.info("No sentiment data available for iPhone 14. Please ensure reviews have been analyzed.")
 
 with tab3:
     st.header("📦 Product Information")
