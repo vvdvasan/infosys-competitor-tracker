@@ -18,6 +18,18 @@ Built as part of **Infosys Springboard Internship 6.0** under the mentorship of 
 
 ---
 
+## 🎬 Demo
+
+<div align="center">
+
+![Dashboard Demo](infosys_dashboard_demo.gif)
+
+*Interactive dashboard showcasing real-time sentiment analysis, price tracking, and AI-powered forecasting*
+
+</div>
+
+---
+
 ## 🎯 Project Overview
 
 This system solves three critical e-commerce challenges:
